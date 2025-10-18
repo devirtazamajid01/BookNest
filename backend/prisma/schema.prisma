@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String
+  roleId    String    @default("user")
+  role      Role      @relation(fields: [roleId], references: [id])
+  feedbacks Feedback[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+
+  @@map("roles")
+}
+
+model Book {
+  id          String     @id @default(cuid())
+  title       String
+  author      String
+  isbn        String     @unique
+  description String?
+  publishedAt DateTime?
+  feedbacks   Feedback[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("books")
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 star rating
+  comment   String   // User's feedback comment
+  userId    String   // Who wrote the feedback
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId    String   // Which book this feedback is for
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  isApproved Boolean  @default(false) // Admin moderation flag
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ensure one feedback per user per book
+  @@unique([userId, bookId])
+  @@map("feedbacks")
+}
