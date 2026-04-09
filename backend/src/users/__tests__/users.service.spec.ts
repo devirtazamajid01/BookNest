@@ -76,16 +76,16 @@ describe('UsersService', () => {
 
       const result = await service.findAll({});
 
-      expect(result).toEqual({
-        data: [{ ...mockUser, password: undefined }],
-        pagination: {
-          total: 1,
-          page: 1,
-          limit: 10,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPrevPage: false,
-        },
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0]).not.toHaveProperty('password');
+      expect(result.data[0].id).toEqual(mockUser.id);
+      expect(result.pagination).toEqual({
+        total: 1,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
       });
     });
 

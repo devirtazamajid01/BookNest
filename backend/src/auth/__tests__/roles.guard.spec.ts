@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Reflector } from '@nestjs/core';
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { RolesGuard } from '../roles.guard';
 
 describe('RolesGuard', () => {
@@ -72,9 +72,9 @@ describe('RolesGuard', () => {
     it('should deny access when user does not have required role', () => {
       mockReflector.getAllAndOverride.mockReturnValue(['ADMIN']);
 
-      const result = guard.canActivate(mockExecutionContext);
-
-      expect(result).toBe(false);
+      expect(() => guard.canActivate(mockExecutionContext)).toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should deny access when user is not present in request', () => {
@@ -87,9 +87,9 @@ describe('RolesGuard', () => {
         }),
       } as unknown as ExecutionContext;
 
-      const result = guard.canActivate(mockContextWithoutUser);
-
-      expect(result).toBe(false);
+      expect(() => guard.canActivate(mockContextWithoutUser)).toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should deny access when user has no role', () => {
@@ -107,17 +107,17 @@ describe('RolesGuard', () => {
         }),
       } as unknown as ExecutionContext;
 
-      const result = guard.canActivate(mockContextWithoutRole);
-
-      expect(result).toBe(false);
+      expect(() => guard.canActivate(mockContextWithoutRole)).toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should handle multiple required roles correctly', () => {
       mockReflector.getAllAndOverride.mockReturnValue(['ADMIN', 'MODERATOR']);
 
-      const result = guard.canActivate(mockExecutionContext);
-
-      expect(result).toBe(false);
+      expect(() => guard.canActivate(mockExecutionContext)).toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should handle admin role correctly', () => {
