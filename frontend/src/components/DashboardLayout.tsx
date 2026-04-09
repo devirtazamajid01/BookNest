@@ -72,7 +72,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <BookIcon sx={{ color: 'white', fontSize: 18 }} />
           </Box>
           <Typography variant="h6" fontWeight={700} color="white" sx={{ fontSize: '1.05rem' }}>
-            BookPortal
+            BookNest
           </Typography>
         </Box>
       </Box>
@@ -267,7 +267,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <BookIcon sx={{ color: '#818CF8', fontSize: 22 }} />
               <Typography variant="h6" noWrap fontWeight={700} sx={{ fontSize: '1rem' }}>
-                BookPortal
+                BookNest
               </Typography>
             </Box>
           </Toolbar>

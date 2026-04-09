@@ -1,5 +1,5 @@
 {
-  "name": "book-management-backend",
+  "name": "booknest-backend",
   "version": "1.0.0",
   "description": "NestJS backend for book management portal",
   "private": true,

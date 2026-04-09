@@ -27,7 +27,7 @@ export default function PublicNavbar() {
               <BookIcon sx={{ color: 'white', fontSize: 18 }} />
             </Box>
             <Typography variant="h6" fontWeight={700} color="white" sx={{ fontSize: '1.05rem' }}>
-              BookPortal
+              BookNest
             </Typography>
           </Box>
         </Link>

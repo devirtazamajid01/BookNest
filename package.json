@@ -1,7 +1,7 @@
 {
-  "name": "book-management-portal",
+  "name": "booknest",
   "version": "1.0.0",
-  "description": "Full-stack Book Management Portal with NestJS and Next.js",
+  "description": "BookNest - Full-stack book management platform with NestJS and Next.js",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",

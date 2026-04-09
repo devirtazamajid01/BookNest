@@ -38,7 +38,7 @@ export default function PublicFooter() {
                 <BookIcon sx={{ color: 'white', fontSize: 16 }} />
               </Box>
               <Typography variant="subtitle1" fontWeight={700}>
-                BookPortal
+                BookNest
               </Typography>
             </Box>
             <Typography variant="body2" sx={{ opacity: 0.6, lineHeight: 1.7, maxWidth: 320 }}>
@@ -100,7 +100,7 @@ export default function PublicFooter() {
           }}
         >
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>
-            &copy; {new Date().getFullYear()} BookPortal. All rights reserved.
+            &copy; {new Date().getFullYear()} BookNest. All rights reserved.
           </Typography>
         </Box>
       </Container>

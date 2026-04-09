@@ -101,7 +101,7 @@ export default function Home() {
             variant="overline"
             sx={{ color: '#818CF8', mb: 2, display: 'block', letterSpacing: '0.15em' }}
           >
-            Book Management Portal
+            BookNest
           </Typography>
           <Typography
             variant="h2"

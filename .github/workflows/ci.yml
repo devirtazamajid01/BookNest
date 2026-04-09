@@ -108,7 +108,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: false
-          tags: book-management-backend:test
+          tags: booknest-backend:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -118,7 +118,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: false
-          tags: book-management-frontend:test
+          tags: booknest-frontend:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

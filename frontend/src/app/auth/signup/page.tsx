@@ -59,7 +59,7 @@ export default function SignupPage() {
                   Create an account
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Join BookPortal to start browsing and reviewing
+                  Join BookNest to start browsing and reviewing
                 </Typography>
               </Box>
 

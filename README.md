@@ -1,15 +1,15 @@
-# book-management-portal
+# BookNest
 
-Full-stack Book Management Portal built with Next.js, NestJS, Prisma, and SQLite. Features authentication, role-based access, book CRUD operations, feedback system, API docs, and testing.
+Full-stack book management platform built with NestJS, Next.js 15, Prisma, and SQLite. Features JWT authentication, role-based access control, book CRUD, feedback moderation system, Swagger API docs, Docker containerization, and CI/CD pipeline.
 
 ## Features
 
 ### Authentication & Authorization
 
-- JWT-based authentication with secure token storage
+- JWT-based authentication with Passport.js strategy
 - Role-based access control (Admin & User roles)
 - Protected routes on both frontend and backend
-- Automatic token refresh handling
+- Automatic 401 handling with token cleanup and redirect
 
 ### Book Management
 
@@ -17,128 +17,127 @@ Full-stack Book Management Portal built with Next.js, NestJS, Prisma, and SQLite
 - **All Users**: Browse books with pagination and filtering
 - Search by title, author, or ISBN
 - Detailed book information with publication dates
-- Responsive card-based UI with consistent sizing
+- Responsive card grid with gradient headers and rating badges
 
 ### Feedback System
 
-- **Users**: Submit ratings (1-5 stars) and reviews on books
+- **Users**: Submit ratings (1-5 stars) and reviews per book (one review per user per book)
 - **Admins**: Moderate feedback (approve/reject)
 - View aggregated ratings and review counts
 - Filter feedback by status (All, Pending, Approved)
+- Ownership-based edit/delete permissions
 
 ### Admin Dashboard
 
-- Moderate user reviews
-- Manage book collection
-- View feedback statistics
-- User-friendly interface with tabs and filters
+- User management with search, role assignment, and deletion
+- User statistics (total users, admins, regular users)
+- Feedback moderation with approve/reject workflow
+- User detail dialog with feedback history
 
 ## Tech Stack
 
 ### Backend
 
-- **Framework**: NestJS (TypeScript)
+- **Framework**: NestJS 10 (TypeScript)
 - **Database**: SQLite with Prisma ORM
-- **Authentication**: JWT (Passport.js)
+- **Authentication**: JWT with Passport.js
 - **Validation**: class-validator, class-transformer
-- **API Documentation**: Swagger/OpenAPI
+- **API Documentation**: Swagger/OpenAPI with typed response entities
 - **Testing**: Jest (unit + integration tests)
 
 ### Frontend
 
-- **Framework**: Next.js 13+ (App Router)
+- **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
-- **UI Library**: Material UI (MUI)
+- **UI Library**: Material UI (MUI) 7 with custom design token system
+- **Data Fetching**: TanStack Query (React Query)
 - **State Management**: React Context API
 - **Form Handling**: React Hook Form + Zod
-- **HTTP Client**: Axios with interceptors
-- **Styling**: MUI's sx prop, responsive design
+- **HTTP Client**: Axios with request/response interceptors
 
 ### DevOps
 
 - **Containerization**: Docker & Docker Compose
-- **CI/CD**: GitHub Actions
+- **CI/CD**: GitHub Actions (4-job pipeline)
 - **Version Control**: Git
 
 ## Project Structure
 
 ```
-book-management-portal/
-├── backend/                      # NestJS Backend
+booknest/
+├── backend/
 │   ├── prisma/
-│   │   ├── schema.prisma        # Database schema
-│   │   ├── migrations/          # Database migrations
-│   │   ├── seed.ts              # Database seeding
-│   │   └── dev.db               # SQLite database (dev)
+│   │   ├── schema.prisma            # Database schema (User, Role, Book, Feedback)
+│   │   ├── migrations/              # Database migrations
+│   │   └── seed.ts                  # Seed data (20 books, 2 users, 2 roles)
 │   ├── src/
-│   │   ├── auth/                # Authentication module
-│   │   │   ├── dto/             # Data Transfer Objects
-│   │   │   ├── __tests__/       # Unit & integration tests
+│   │   ├── auth/                    # Authentication module
+│   │   │   ├── dto/                 # LoginDto, SignupDto
+│   │   │   ├── entities/            # LoginResponse, UserProfile, Role entities
+│   │   │   ├── __tests__/           # Unit & integration tests
 │   │   │   ├── auth.controller.ts
 │   │   │   ├── auth.service.ts
-│   │   │   ├── jwt.strategy.ts
+│   │   │   ├── jwt.strategy.ts      # Passport JWT strategy with typed payload
 │   │   │   ├── jwt-auth.guard.ts
+│   │   │   ├── roles.guard.ts       # Role-based access with ForbiddenException
 │   │   │   ├── roles.decorator.ts
-│   │   │   └── roles.guard.ts
-│   │   ├── books/               # Books module
-│   │   │   ├── dto/
+│   │   │   └── index.ts             # Barrel export for guards/decorators
+│   │   ├── books/                   # Books module
+│   │   │   ├── dto/                 # CreateBook, UpdateBook, QueryBook
+│   │   │   ├── entities/            # BookEntity, BookWithFeedback
 │   │   │   ├── __tests__/
 │   │   │   ├── books.controller.ts
 │   │   │   └── books.service.ts
-│   │   ├── feedback/            # Feedback module
-│   │   │   ├── dto/
+│   │   ├── feedback/                # Feedback module
+│   │   │   ├── dto/                 # CreateFeedback, UpdateFeedback, QueryFeedback
+│   │   │   ├── entities/            # FeedbackEntity with relation summaries
 │   │   │   ├── __tests__/
 │   │   │   ├── feedback.controller.ts
 │   │   │   └── feedback.service.ts
-│   │   ├── users/               # Users module
-│   │   │   ├── dto/
+│   │   ├── users/                   # Users module
+│   │   │   ├── dto/                 # UpdateUser, QueryUser, ChangeRole
+│   │   │   ├── entities/            # UserEntity, UserStats
 │   │   │   ├── __tests__/
 │   │   │   ├── users.controller.ts
 │   │   │   └── users.service.ts
-│   │   ├── common/              # Shared utilities
-│   │   │   └── prisma/          # Prisma service
-│   │   ├── app.module.ts        # Root module
-│   │   └── main.ts              # Application entry
-│   ├── Dockerfile               # Backend container
-│   ├── .dockerignore
-│   ├── package.json
-│   └── tsconfig.json
+│   │   ├── common/                  # Shared infrastructure
+│   │   │   ├── entities/            # PaginationMeta, MessageResponse
+│   │   │   └── prisma/              # Global PrismaService with lifecycle hooks
+│   │   ├── app.module.ts
+│   │   └── main.ts                  # Bootstrap with JWT validation, CORS, Swagger
+│   ├── Dockerfile
+│   └── package.json
 │
-├── frontend/                     # Next.js Frontend
+├── frontend/
 │   ├── src/
-│   │   ├── app/                 # App Router pages
-│   │   │   ├── auth/
-│   │   │   │   ├── login/       # Login page
-│   │   │   │   └── signup/      # Signup page
-│   │   │   ├── books/
-│   │   │   │   ├── page.tsx     # Books listing
-│   │   │   │   ├── new/         # Add book (Admin)
-│   │   │   │   └── [id]/
-│   │   │   │       ├── page.tsx          # Book details
-│   │   │   │       ├── edit/             # Edit book (Admin)
-│   │   │   │       └── feedback/         # Submit review
-│   │   │   ├── admin/
-│   │   │   │   └── feedback/    # Moderate reviews (Admin)
-│   │   │   ├── page.tsx         # Landing page
-│   │   │   ├── layout.tsx       # Root layout
-│   │   │   ├── globals.css
-│   │   │   └── providers.tsx    # Theme & Auth providers
+│   │   ├── app/                     # Next.js App Router
+│   │   │   ├── auth/login/          # Login page
+│   │   │   ├── auth/signup/         # Signup page
+│   │   │   ├── books/               # Book listing, detail, create, edit
+│   │   │   ├── books/[id]/feedback/ # Submit review
+│   │   │   ├── my-feedback/         # User's own reviews
+│   │   │   ├── admin/users/         # User management (Admin)
+│   │   │   ├── admin/feedback/      # Feedback moderation (Admin)
+│   │   │   ├── page.tsx             # Landing page
+│   │   │   ├── layout.tsx           # Root layout
+│   │   │   ├── globals.css          # Base styles (Inter font, resets)
+│   │   │   └── providers.tsx        # MUI theme + QueryClient + AuthProvider
 │   │   ├── components/
-│   │   │   └── DashboardLayout.tsx  # Sidebar layout
+│   │   │   ├── DashboardLayout.tsx   # Sidebar with active route highlighting
+│   │   │   ├── PublicNavbar.tsx      # Shared nav for public pages
+│   │   │   └── PublicFooter.tsx      # Shared footer for public pages
 │   │   ├── hooks/
-│   │   │   └── useAuth.tsx      # Auth context & hook
+│   │   │   └── useAuth.tsx           # Auth context & hook
 │   │   └── lib/
-│   │       ├── api.ts           # Axios instance
-│   │       └── auth.ts          # Auth utilities
-│   ├── Dockerfile               # Frontend container
-│   ├── .dockerignore
-│   ├── next.config.ts
-│   ├── package.json
-│   └── tsconfig.json
+│   │       ├── api.ts                # Axios with JWT interceptors
+│   │       └── auth.ts               # Auth API calls & localStorage helpers
+│   ├── Dockerfile
+│   └── package.json
 │
-├── docker-compose.yml           # Container orchestration
-├── env.example                  # Environment template
-└── README.md                    # This file
+├── .github/workflows/ci.yml         # CI pipeline (tests, build, Docker, lint)
+├── docker-compose.yml                # Container orchestration
+├── env.example                       # Environment variable template
+└── package.json                      # Root orchestrator (concurrently)
 ```
 
 ## Getting Started
@@ -146,246 +145,162 @@ book-management-portal/
 ### Prerequisites
 
 - **Node.js** 18 or higher
-- **npm** or **yarn**
+- **npm**
 - **Docker** & **Docker Compose** (for containerized setup)
 
 ### Option 1: Docker Setup (Recommended)
 
-1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd booknest
+cp env.example .env
+# Edit .env — set a real JWT_SECRET
+docker compose up -d --build
+```
 
-   ```bash
-   git clone <repository-url>
-   cd book-management-portal
-   ```
+Access the application:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3001
+- **Swagger Docs**: http://localhost:3001/api
 
-2. **Set up environment variables**
+Stop containers:
 
-   ```bash
-   cp env.example .env
-   ```
-
-3. **Build and run containers**
-
-   ```bash
-   docker-compose build
-   docker-compose up -d
-   ```
-
-4. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
-   - Swagger Docs: http://localhost:3001/api
-
-5. **Stop containers**
-   ```bash
-   docker-compose down
-   ```
+```bash
+docker compose down
+```
 
 ### Option 2: Local Development
 
-#### Backend Setup
+**Backend:**
 
-1. **Navigate to backend directory**
+```bash
+cd backend
+cp .env.example .env
+npm install
+npx prisma generate
+npx prisma migrate dev
+npx prisma db seed
+npm run start:dev
+```
 
-   ```bash
-   cd backend
-   ```
+Backend available at http://localhost:3001
 
-2. **Install dependencies**
+**Frontend (new terminal):**
 
-   ```bash
-   npm install
-   ```
+```bash
+cd frontend
+npm install
+echo 'NEXT_PUBLIC_API_URL=http://localhost:3001' > .env.local
+npm run dev
+```
 
-3. **Set up environment variables**
+Frontend available at http://localhost:3000
 
-   ```bash
-   cp ../env.example .env
-   ```
+**Both at once (from root):**
 
-4. **Set up database**
-
-   ```bash
-   npx prisma generate
-   npx prisma migrate deploy
-   npx prisma db seed
-   ```
-
-5. **Start development server**
-
-   ```bash
-   npm run start:dev
-   ```
-
-   Backend will be available at http://localhost:3001
-
-#### Frontend Setup
-
-1. **Open a new terminal and navigate to frontend**
-
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-
-   ```bash
-   # Create .env.local file
-   echo 'NEXT_PUBLIC_API_URL=http://localhost:3001' > .env.local
-   ```
-
-4. **Start development server**
-
-   ```bash
-   npm run dev
-   ```
-
-   Frontend will be available at http://localhost:3000
+```bash
+npm install
+npm run dev
+```
 
 ## Testing
-
-### Backend Tests
 
 ```bash
 cd backend
 
 # Run all tests (unit + integration)
 npm run test
+
+# Run only unit tests
+npm run test:unit
+
+# Run only integration tests
+npm run test:integration
+
+# Run with coverage
+npm run test:cov
 ```
 
-### Test Structure
+Tests are co-located with source code in `__tests__/` folders. Unit tests mock dependencies; integration tests use a real SQLite database.
 
-- **Unit Tests**: Test services and controllers in isolation with mocked dependencies
-- **Integration Tests**: Test component interactions with real database
+## API Documentation
 
-Example test files:
+Swagger UI is available at http://localhost:3001/api when the backend is running.
 
-- `src/auth/__tests__/auth.service.spec.ts` - Unit tests
-- `src/auth/__tests__/auth.integration.spec.ts` - Integration tests
+### Endpoints
 
-## 📖 API Documentation
-
-The backend API is fully documented using Swagger/OpenAPI.
-
-**Access Swagger UI**: http://localhost:3001/api
-
-### Key Endpoints
-
-#### Authentication
-
-- `POST /auth/signup` - Register new user
-- `POST /auth/login` - Login and get JWT token
-
-#### Books
-
-- `GET /books` - List books (paginated)
-- `GET /books/:id` - Get book details
-- `POST /books` - Create book (Admin only)
-- `PATCH /books/:id` - Update book (Admin only)
-- `DELETE /books/:id` - Delete book (Admin only)
-
-#### Feedback
-
-- `GET /feedback` - List all feedback (Admin only)
-- `GET /feedback/book/:bookId` - Get feedback for a book
-- `POST /feedback` - Submit feedback (Authenticated)
-- `PATCH /feedback/:id` - Update feedback approval (Admin only)
-- `DELETE /feedback/:id` - Delete feedback (Admin only)
-
-#### Users
-
-- `GET /users/me` - Get current user profile
-- `GET /users` - List users (Admin only)
-- `PATCH /users/:id/role` - Update user role (Admin only)
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | /auth/signup | - | Register new user |
+| POST | /auth/login | - | Login, get JWT |
+| GET | /auth/profile | JWT | Get current user |
+| GET | /books | - | List books (paginated) |
+| GET | /books/:id | - | Get book details |
+| POST | /books | Admin | Create book |
+| PATCH | /books/:id | Admin | Update book |
+| DELETE | /books/:id | Admin | Delete book |
+| POST | /feedback | JWT | Submit review |
+| GET | /feedback | Admin | List all feedback |
+| GET | /feedback/book/:bookId | - | Get book reviews |
+| GET | /feedback/my-feedback | JWT | Get own reviews |
+| PATCH | /feedback/:id | JWT | Update review |
+| DELETE | /feedback/:id | JWT | Delete review |
+| PATCH | /feedback/:id/approve | Admin | Approve review |
+| PATCH | /feedback/:id/reject | Admin | Reject review |
+| GET | /users | Admin | List users |
+| GET | /users/me | JWT | Get own profile |
+| GET | /users/stats | Admin | Get user statistics |
+| PATCH | /users/:id | Admin | Update user |
+| PATCH | /users/:id/role | Admin | Change user role |
+| DELETE | /users/:id | Admin | Delete user |
 
 ## Database Schema
 
-### Models
-
-**User**
-
-- id, name, email, password (hashed)
-- roleId (foreign key to Role)
-- createdAt, updatedAt
-
-**Role**
-
-- id, name (USER, ADMIN)
-
-**Book**
-
-- id, title, author, isbn, description
-- publishedAt, createdAt, updatedAt
-
-**Feedback**
-
-- id, rating (1-5), comment
-- userId, bookId (foreign keys)
-- isApproved, createdAt, updatedAt
+| Model | Fields | Notes |
+|-------|--------|-------|
+| **User** | id, name, email, password (hashed), roleId | Unique email, cascading delete on feedback |
+| **Role** | id, name, description | USER and ADMIN |
+| **Book** | id, title, author, isbn, description, publishedAt | Unique ISBN |
+| **Feedback** | id, rating (1-5), comment, userId, bookId, isApproved | Unique per user+book pair |
 
 ## Design Decisions
 
-### Architecture
+### Backend Architecture
 
-**Modular Design**: Backend follows NestJS module pattern for clear separation of concerns.
+- **Feature-module pattern**: Each domain (auth, books, feedback, users) is self-contained with consistent 5-layer structure (module, controller, service, DTOs, entities)
+- **SOLID principles**: Single responsibility per layer, barrel exports for Open/Closed, `readonly` injected dependencies for Dependency Inversion
+- **Typed Prisma queries**: `Prisma.BookWhereInput` etc. instead of `any` for compile-time safety
+- **Response entities**: `@ApiProperty` decorated classes for typed Swagger schemas and explicit return types
+- **Shared infrastructure**: `buildPaginationMeta()` utility and `MessageResponse` entity reused across all modules
+- **Fail-fast startup**: JWT_SECRET validated at boot, `enableShutdownHooks()` for graceful container shutdown
 
-**JWT Authentication**: Stateless authentication with role-based guards for scalability.
+### Frontend Architecture
 
-**Repository Pattern**: Prisma ORM provides a clean data access layer.
+- **MUI design token system**: Custom palette, typography, shadows, and 14 component overrides in a single `providers.tsx`
+- **Layout separation**: `DashboardLayout` (sidebar + active route) for authenticated pages, `PublicNavbar`/`PublicFooter` for public pages
+- **SSR-safe patterns**: `QueryClient` in `useState`, localStorage access guarded by client-side checks
+- **Form validation**: Zod schemas with React Hook Form for type-safe validation
 
-**API-First**: RESTful API design with Swagger documentation for easy integration.
+### CI/CD Pipeline
 
-### Frontend
-
-**App Router**: Next.js 13+ App Router for modern routing and layouts.
-
-**Component Architecture**: Reusable components with consistent styling via MUI.
-
-**Context API**: Simple global state management for authentication.
-
-**Form Validation**: Zod schemas ensure type-safe form validation.
-
-**Responsive Design**: Mobile-first approach with MUI breakpoints.
-
-### Testing
-
-**Co-located Tests**: Tests live next to the code they test for easy maintenance.
-
-**Test Pyramid**: Focus on unit tests, with integration tests for critical flows.
-
-**Real Database**: Integration tests use SQLite for realistic scenarios.
-
-### DevOps
-
-**Environment Variables**: Centralized configuration via .env files.
-
-**Git Hygiene**: Clear commit messages with conventional format.
+4 GitHub Actions jobs on push/PR to main and develop:
+1. **Backend tests**: Install, generate Prisma, migrate, run Jest, build
+2. **Frontend build**: Install, build Next.js, verify output
+3. **Docker build**: Build both images with Buildx + GHA cache (no push)
+4. **Lint check**: Prettier on backend, `tsc --noEmit` on frontend
 
 ## Default Credentials
 
-After seeding the database, you can login with:
+After seeding the database:
 
-**Admin User:**
-
-- Email: admin@example.com
-- Password: Admin123!
-
-**Regular User:**
-
-- Email: user@example.com
-- Password: User123!
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@example.com | admin123 |
+| User | user@example.com | user123 |
 
 ## Environment Variables
 
-See `env.example` for all required environment variables:
-
-### Backend (.env in backend/)
+### Backend (`backend/.env`)
 
 ```env
 DATABASE_URL="file:./dev.db"
@@ -395,25 +310,11 @@ PORT=3001
 NODE_ENV="development"
 ```
 
-### Frontend (.env.local in frontend/)
+### Frontend (`frontend/.env.local`)
 
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:3001"
 ```
-
-## Deployment
-
-### CI/CD Pipeline
-
-The project includes a GitHub Actions CI/CD pipeline that:
-- Automatically runs tests on pull requests and pushes
-- Builds and validates both frontend and backend
-- Ensures code quality with linting and type checking
-- Provides automated deployment capabilities
-
-### Docker Deployment
-
-The application is containerized and ready for deployment
 
 ## License
 

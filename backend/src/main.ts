@@ -31,8 +31,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Book Management Portal API')
-    .setDescription('API for managing books, users, and feedback')
+    .setTitle('BookNest API')
+    .setDescription('BookNest API for managing books, users, and feedback')
     .setVersion('1.0')
     .addTag('Authentication')
     .addTag('Books')

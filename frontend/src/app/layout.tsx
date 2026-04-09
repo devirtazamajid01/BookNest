@@ -3,9 +3,9 @@ import './globals.css';
 import { AppProviders } from './providers';
 
 export const metadata: Metadata = {
-  title: 'Book Management Portal',
+  title: 'BookNest',
   description:
-    'Browse, review, and manage your book collection with powerful admin tools.',
+    'BookNest — Browse, review, and manage your book collection with powerful admin tools.',
 };
 
 export default function RootLayout({
